@@ -5,6 +5,7 @@ services:
     restart: always
     container_name: kafka-ui
     depends_on:
+      - zookeeper
       - kafka-0
       - kafka-1
       - kafka-2
@@ -65,7 +66,7 @@ services:
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_LISTENERS: SASL_PLAINTEXT://0.0.0.0:9090,SSL://0.0.0.0:9091,EXTERNAL_SASL://0.0.0.0:9010
-      KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://kafka-0:9090,SSL://kafka-0:9091,EXTERNAL_SASL://localhost:9010
+      KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://kafka-0:9090,SSL://kafka-0:9091,EXTERNAL_SASL://kafka-0:9010
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_PLAINTEXT:SASL_PLAINTEXT,SSL:SSL,EXTERNAL_SASL:SASL_SSL
       KAFKA_INTER_BROKER_LISTENER_NAME: SASL_PLAINTEXT
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka-0.keystore.pkcs12
@@ -106,7 +107,7 @@ services:
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_LISTENERS: SASL_PLAINTEXT://0.0.0.0:9092,SSL://0.0.0.0:9093,EXTERNAL_SASL://0.0.0.0:9011
-      KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://kafka-1:9092,SSL://kafka-1:9093,EXTERNAL_SASL://localhost:9011
+      KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://kafka-1:9092,SSL://kafka-1:9093,EXTERNAL_SASL://kafka-1:9011
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_PLAINTEXT:SASL_PLAINTEXT,SSL:SSL,EXTERNAL_SASL:SASL_SSL
       KAFKA_INTER_BROKER_LISTENER_NAME: SASL_PLAINTEXT
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka-1.keystore.pkcs12
@@ -147,7 +148,7 @@ services:
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_LISTENERS: SASL_PLAINTEXT://0.0.0.0:9094,SSL://0.0.0.0:9095,EXTERNAL_SASL://0.0.0.0:9012
-      KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://kafka-2:9094,SSL://kafka-2:9095,EXTERNAL_SASL://localhost:9012
+      KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://kafka-2:9094,SSL://kafka-2:9095,EXTERNAL_SASL://kafka-2:9012
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_PLAINTEXT:SASL_PLAINTEXT,SSL:SSL,EXTERNAL_SASL:SASL_SSL
       KAFKA_INTER_BROKER_LISTENER_NAME: SASL_PLAINTEXT
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka-2.keystore.pkcs12
@@ -165,6 +166,21 @@ services:
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "false"
       KAFKA_SUPER_USERS: User:admin
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
+  kafka-init:
+    image: confluentinc/cp-kafka:7.4.4
+    depends_on:
+      - kafka-0
+      - kafka-1
+      - kafka-2
+    networks:
+      - kafka-network
+    volumes:
+      - ./kafka-init.sh:/usr/bin/kafka-init.sh
+      - ./wait-for-it.sh:/usr/bin/wait-for-it.sh
+      - ./kafka-0-creds:/etc/kafka/secrets
+    environment:
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
+    entrypoint: ["sh", "-c", "/usr/bin/wait-for-it.sh kafka-0:9010 --timeout=60 --strict -- /usr/bin/wait-for-it.sh kafka-1:9011 --timeout=60 --strict -- /usr/bin/wait-for-it.sh kafka-2:9012 --timeout=60 --strict -- /usr/bin/kafka-init.sh"]
 
 volumes:
   data-zookeeper-log-1:
