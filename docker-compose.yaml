@@ -168,8 +168,8 @@ services:
     networks:
       - kafka-network
     volumes:
-      - ./kafka-init.sh:/usr/bin/kafka-init.sh
-      - ./wait-for-it.sh:/usr/bin/wait-for-it.sh
+      - ./scripts/kafka-init.sh:/usr/bin/kafka-init.sh
+      - ./scripts/wait-for-it.sh:/usr/bin/wait-for-it.sh
       - ./kafka-0-creds:/etc/kafka/secrets
     environment:
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
@@ -298,6 +298,15 @@ services:
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
     #command: bash -c "cub kafka-ready -z zookeeper:2181 1 30 && cub kafka-ready -z target-zookeeper:2182 1 30 && kafka-mirror-maker --consumer.config /etc/kafka/mirror-maker-config/consumer.properties --producer.config /etc/kafka/mirror-maker-config/producer.properties --whitelist='.*'"
     command: bash -c 'kafka-mirror-maker --consumer.config /etc/kafka/mirror-maker-config/consumer.properties --producer.config /etc/kafka/mirror-maker-config/producer.properties --whitelist=".*"'
+
+  shopapi:
+    build:
+      context: ./shopapi
+    container_name: shopapi
+    ports:
+      - 8085:8085
+    networks:
+      - kafka-network
 
 volumes:
   data-zookeeper-log-1:
