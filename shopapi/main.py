@@ -1,7 +1,7 @@
 import uvicorn
 import logging
+import json
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 from confluent_kafka import Producer
 
 
@@ -34,24 +34,25 @@ def delivery_report(err, msg):
     else:
         logger.info(f"Сообщение «{msg.__str__()}» доставлено в {msg.topic()} [{msg.partition()}]")
 
-class Message(BaseModel):
-    topic: str
-    key: str
-    value: str
-
 @app.get("/")
 async def root():
     return "Перейдите по адресу http://localhost:8085/docs для взаимодействия со Swagger"
 
-@app.post("/send-message/")
-async def send_message(message: Message):
+@app.get("/products")
+async def get_products():
     try:
-        producer.produce(
-            message.topic,
-            key=message.key,
-            value=message.value,
-            callback=delivery_report
-        )
+        # Открываем файл и читаем данные
+        with open('products.json', 'r', encoding='utf-8') as file:
+            products = json.load(file)
+
+        # Отправляем каждый продукт в Kafka
+        for product in products:
+            producer.produce(
+                topic="products",  # Укажите ваш топик
+                key="product",  # Используйте уникальный идентификатор продукта в качестве ключа
+                value=json.dumps(product),  # Преобразуем продукт в строку JSON
+                callback=delivery_report
+            )
         producer.flush()
         return {"status": "Сообщение отправлено успешно"}
     except Exception as e:

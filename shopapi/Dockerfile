@@ -6,6 +6,7 @@ COPY main.py main.py
 COPY ca.crt ca.crt
 COPY kafka-1.crt kafka-1.crt
 COPY kafka-1.key kafka-1.key
+COPY products.json products.json
 
 #установим нужные зависимости
 RUN pip install fastapi uvicorn confluent-kafka
