@@ -18,10 +18,10 @@ def delivery_report(err, msg):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     producer_conf = {
-       "bootstrap.servers": "localhost:9011",
+       "bootstrap.servers": "kafka-1:9011",
 
        "security.protocol": "SASL_SSL",
-       "ssl.ca.location": "ca.crt",  # Сертификат центра сертификации
+       "ssl.ca.location": "сreds/ca.crt",  # Сертификат центра сертификации
        "ssl.certificate.location": "kafka-1-creds/kafka-1.crt",  # Сертификат клиента Kafka
        "ssl.key.location": "kafka-1-creds/kafka-1.key",  # Приватный ключ для клиента Kafka
 
