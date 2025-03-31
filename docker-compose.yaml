@@ -57,6 +57,31 @@ services:
       KAFKA_CLUSTERS_1_PROPERTIES_SASL_MECHANISM: PLAIN
       KAFKA_CLUSTERS_1_PROPERTIES_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required username=admin password=admin-secret;"
   
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.4.4
+    container_name: schema-registry
+    depends_on:
+      - shopapi
+    ports:
+      - "8081:8081"
+    networks:
+      - kafka-network
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "SASL_PLAINTEXT://kafka-0:9090,SASL_PLAINTEXT://kafka-1:9092,SASL_PLAINTEXT://kafka-2:9094"
+      SCHEMA_REGISTRY_HOST_NAME: "schema-registry"
+      SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
+      SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: "SASL_PLAINTEXT"
+      SCHEMA_REGISTRY_KAFKASTORE_SASL_MECHANISM: "PLAIN"
+      SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required username='admin' password='admin-secret';"
+  schema-registrar:
+    build:
+      context: ./schema-registrar
+    container_name: schema-registrar
+    depends_on:
+      - schema-registry
+    networks:
+      - kafka-network
+
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.4
     restart: always
@@ -297,7 +322,7 @@ services:
     environment:
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
     #command: bash -c "cub kafka-ready -z zookeeper:2181 1 30 && cub kafka-ready -z target-zookeeper:2182 1 30 && kafka-mirror-maker --consumer.config /etc/kafka/mirror-maker-config/consumer.properties --producer.config /etc/kafka/mirror-maker-config/producer.properties --whitelist='.*'"
-    command: bash -c 'kafka-mirror-maker --consumer.config /etc/kafka/mirror-maker-config/consumer.properties --producer.config /etc/kafka/mirror-maker-config/producer.properties --whitelist=".*"'
+    command: bash -c 'kafka-mirror-maker --consumer.config /etc/kafka/mirror-maker-config/consumer.properties --producer.config /etc/kafka/mirror-maker-config/producer.properties --whitelist=products'
 
   shopapi:
     build:
