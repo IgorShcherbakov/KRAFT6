@@ -9,7 +9,7 @@ COPY kafka-1.key kafka-1.key
 COPY products.json products.json
 
 #установим нужные зависимости
-RUN pip install fastapi uvicorn confluent-kafka
+RUN pip install fastapi uvicorn confluent-kafka[avro,json]
 
 #выполним код при старте контейнера
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8085"]

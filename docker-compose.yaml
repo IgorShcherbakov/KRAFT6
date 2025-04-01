@@ -48,6 +48,7 @@ services:
       KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: SASL_PLAINTEXT
       KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM: PLAIN
       KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required username=admin password=admin-secret;"
+      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: "http://schema-registry:8081"
 
       # target custer
       KAFKA_CLUSTERS_1_NAME: target-cluster
@@ -56,12 +57,15 @@ services:
       KAFKA_CLUSTERS_1_PROPERTIES_SECURITY_PROTOCOL: SASL_PLAINTEXT
       KAFKA_CLUSTERS_1_PROPERTIES_SASL_MECHANISM: PLAIN
       KAFKA_CLUSTERS_1_PROPERTIES_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required username=admin password=admin-secret;"
+      KAFKA_CLUSTERS_1_SCHEMAREGISTRY: "http://schema-registry:8081"
   
   schema-registry:
     image: confluentinc/cp-schema-registry:7.4.4
     container_name: schema-registry
     depends_on:
-      - shopapi
+      - kafka-0
+      - kafka-1
+      - kafka-2
     ports:
       - "8081:8081"
     networks:
@@ -328,6 +332,8 @@ services:
     build:
       context: ./shopapi
     container_name: shopapi
+    depends_on:
+      - schema-registry
     ports:
       - 8085:8085
     networks:
