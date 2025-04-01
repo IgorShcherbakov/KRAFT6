@@ -1,13 +1,30 @@
 import uvicorn
 import logging
 import json
+import time
 from fastapi import FastAPI, HTTPException
 from confluent_kafka import Producer
+from confluent_kafka.serialization import SerializationContext, MessageField
+from confluent_kafka.schema_registry.json_schema import JSONSerializer
+from confluent_kafka.schema_registry import SchemaRegistryClient
 
 
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+# Конфигурация для подключения к Schema Registry
+schema_registry_conf = {
+    'url': 'http://schema-registry:8081',  # URL вашего Schema Registry
+}
+schema_registry_client = SchemaRegistryClient(schema_registry_conf)
+
+# Получаем последнюю версию схемы по имени
+subject_name = "products-value"  # Имя subject в Schema Registry
+schema_response = schema_registry_client.get_latest_version(subject_name)
+json_schema_str = schema_response.schema.schema_str
+
+json_serializer = JSONSerializer(json_schema_str, schema_registry_client)
 
 producer_conf = {
     "bootstrap.servers": "kafka-1:9011",
@@ -50,9 +67,10 @@ async def get_products():
             producer.produce(
                 topic="products",  # Укажите ваш топик
                 key="product",  # Используйте уникальный идентификатор продукта в качестве ключа
-                value=json.dumps(product),  # Преобразуем продукт в строку JSON
+                value=json_serializer(product, SerializationContext("products", MessageField.VALUE)),
                 callback=delivery_report
             )
+            time.sleep(30)
         producer.flush()
         return {"status": "Сообщение отправлено успешно"}
     except Exception as e:
