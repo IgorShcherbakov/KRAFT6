@@ -308,7 +308,23 @@ services:
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka-2.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka-2_truststore_creds
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka-2.sasl.jaas.conf"
-  
+  target-kafka-init:
+    image: confluentinc/cp-kafka:7.4.4
+    container_name: target-kafka-init
+    depends_on:
+      - target-kafka-0
+      - target-kafka-1
+      - target-kafka-2
+    networks:
+      - kafka-network
+    volumes:
+      - ./scripts/target-kafka-init.sh:/usr/bin/target-kafka-init.sh
+      - ./scripts/wait-for-it.sh:/usr/bin/wait-for-it.sh
+      - ./kafka-0-creds:/etc/kafka/secrets
+    environment:
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
+    entrypoint: ["sh", "-c", "/usr/bin/wait-for-it.sh target-kafka-0:10010 --timeout=60  --strict -- /usr/bin/target-kafka-init.sh"]
+
   mirror-maker:
     image: confluentinc/cp-kafka:7.4.4
     restart: always
@@ -328,7 +344,6 @@ services:
       - ./mirror-maker-config:/etc/kafka/mirror-maker-config
     environment:
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
-    #command: bash -c "cub kafka-ready -z zookeeper:2181 1 30 && cub kafka-ready -z target-zookeeper:2182 1 30 && kafka-mirror-maker --consumer.config /etc/kafka/mirror-maker-config/consumer.properties --producer.config /etc/kafka/mirror-maker-config/producer.properties --whitelist='.*'"
     command: bash -c 'kafka-mirror-maker --consumer.config /etc/kafka/mirror-maker-config/consumer.properties --producer.config /etc/kafka/mirror-maker-config/producer.properties --whitelist=products,search-products'
 
   shopapi:
@@ -377,6 +392,113 @@ services:
       - kafka-network
     environment:
       ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+
+  hadoop-namenode:
+    image: apache/hadoop:3.4.1
+    container_name: hadoop-namenode
+    hostname: hadoop-namenode
+    user: "root"
+    restart: always
+    platform: linux/amd64
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"   # Ограничение использования CPU
+          memory: "2g"  # Ограничение использования RAM
+    shm_size: 10G
+    ports:
+      - "9870:9870"  # HTTP-порт для Web UI HDFS NameNode
+      - "9000:9000"  # RPC порт для запросов к NameNode
+    volumes:
+      - ./hadoop/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
+      - ./hadoop/hdfs-site-namenode.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml
+      - ./hadoop/namenode_entrypoint.sh:/namenode_entrypoint.sh
+    entrypoint: ["/bin/bash", "/namenode_entrypoint.sh"]
+    command: ["hdfs", "namenode"]
+  hadoop-datanode-1:
+    image: apache/hadoop:3.4.1
+    container_name: hadoop-datanode-1
+    hostname: hadoop-datanode-1
+    user: "root"
+    restart: always
+    platform: linux/amd64
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"   # Ограничение использования CPU
+          memory: "2g"  # Ограничение использования RAM
+    shm_size: 10G
+    depends_on:
+      - hadoop-namenode
+    ports:
+      - "9864:9864"  # HTTP-порт для Web UI DataNode №1
+      - "9970:9970"  # RPC порт для запросов от NameNode
+    volumes:
+      - ./hadoop/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
+      - ./hadoop/hdfs-site-datanode-1.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml
+      - ./hadoop/datanode_entrypoint.sh:/datanode_entrypoint.sh
+    entrypoint: ["/bin/bash", "/datanode_entrypoint.sh"]
+    command: ["hdfs", "datanode"]
+  hadoop-datanode-2:
+    image: apache/hadoop:3.4.1
+    container_name: hadoop-datanode-2
+    hostname: hadoop-datanode-2
+    user: "root"
+    restart: always
+    platform: linux/amd64
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"   # Ограничение использования CPU
+          memory: "2g"  # Ограничение использования RAM
+    shm_size: 10G
+    depends_on:
+      - hadoop-namenode
+    ports:
+      - "9865:9865"  # HTTP-порт для Web UI DataNode №2
+      - "9971:9971"  # RPC порт для запросов от NameNode
+    volumes:
+      - ./hadoop/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
+      - ./hadoop/hdfs-site-datanode-2.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml
+      - ./hadoop/datanode_entrypoint.sh:/datanode_entrypoint.sh
+    entrypoint: ["/bin/bash", "/datanode_entrypoint.sh"]
+    command: ["hdfs", "datanode"]
+  hadoop-datanode-3:
+    image: apache/hadoop:3.4.1
+    container_name: hadoop-datanode-3
+    hostname: hadoop-datanode-3
+    user: "root"
+    restart: always
+    platform: linux/amd64
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"   # Ограничение использования CPU
+          memory: "2g"  # Ограничение использования RAM
+    shm_size: 10G
+    depends_on:
+      - hadoop-namenode
+    ports:
+      - "9866:9866"  # HTTP-порт для Web UI DataNode №3
+      - "9972:9972"  # RPC порт для запросов от NameNode
+    volumes:
+      - ./hadoop/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
+      - ./hadoop/hdfs-site-datanode-3.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml
+      - ./hadoop/datanode_entrypoint.sh:/datanode_entrypoint.sh
+    entrypoint: ["/bin/bash", "/datanode_entrypoint.sh"]
+    command: ["hdfs", "datanode"]
+  hadoopapi:
+    build:
+      context: ./hadoop
+    container_name: hadoopapi
+    depends_on:
+      - hadoop-namenode
+      - target-kafka-1
+    ports:
+      - 8087:8087
+    networks:
+      - kafka-network
+
 
 volumes:
   data-zookeeper-log-1:

@@ -14,23 +14,37 @@
 ### 10. target-kafka-0
 ### 11. target-kafka-1
 ### 12. target-kafka-2
-### 13. mirror-maker
+### 13. target-kafka-init
+### 14. mirror-maker
 
-### 14. shopapi
+### 15. shopapi
 Веб-сервис который отправляет данные о товарах в кафку.
 Swagger - http://localhost:8085/docs
 
-### 15. clientapi
+### 16. clientapi
 Веб-сервис который моделирует запросы от клиентов.
 Swagger - http://localhost:8086/docs
 
-### 16. elasticsearch
+### 17. elasticsearch
 Сервис для хранения и анализа данных.
 
-### 17. kibana
+### 18. kibana
 Сервис, который предоставляет интерфейс для визуализации и анализа данных.
 
+### 19. hadoop-namenode
+
+### 20. hadoop-datanode-1
+
+### 21. hadoop-datanode-2
+
+### 22. hadoop-datanode-3
+
+### 23. hadoopapi
+Веб-сервис который моделирует перенос данных в HDFS, а так же отправление рекомендаций в топик Kafka.
+Swagger - http://localhost:8087/docs
+
 ### Шаг 1. Создайте источники данных
+ok
 
 ### Шаг 2. Разверните Apache Kafka и настройте топики
 ok

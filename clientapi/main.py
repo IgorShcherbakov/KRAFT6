@@ -13,7 +13,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(title="ClientAPI")
 
 producer_conf = {
     "bootstrap.servers": "kafka-1:9011",

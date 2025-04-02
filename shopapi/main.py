@@ -11,20 +11,12 @@ from confluent_kafka.schema_registry import SchemaRegistryClient
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+app = FastAPI(title="ShopAPI")
 
 # Конфигурация для подключения к Schema Registry
 schema_registry_conf = {
     'url': 'http://schema-registry:8081',  # URL вашего Schema Registry
 }
-schema_registry_client = SchemaRegistryClient(schema_registry_conf)
-
-# Получаем последнюю версию схемы по имени
-subject_name = "products-value"  # Имя subject в Schema Registry
-schema_response = schema_registry_client.get_latest_version(subject_name)
-json_schema_str = schema_response.schema.schema_str
-
-json_serializer = JSONSerializer(json_schema_str, schema_registry_client)
 
 producer_conf = {
     "bootstrap.servers": "kafka-1:9011",
@@ -48,12 +40,16 @@ def delivery_report(err, msg):
     else:
         logger.info(f"Сообщение «{msg.__str__()}» доставлено в {msg.topic()} [{msg.partition()}]")
 
-@app.get("/")
-async def root():
-    return "Перейдите по адресу http://localhost:8085/docs для взаимодействия со Swagger"
-
 @app.get("/products")
 async def get_products():
+    schema_registry_client = SchemaRegistryClient(schema_registry_conf)
+
+    # Получаем последнюю версию схемы по имени
+    subject_name = "products-value"  # Имя subject в Schema Registry
+    schema_response = schema_registry_client.get_latest_version(subject_name)
+    json_schema_str = schema_response.schema.schema_str
+
+    json_serializer = JSONSerializer(json_schema_str, schema_registry_client)
     # создание продюсера
     producer = Producer(producer_conf)
     try:
@@ -69,7 +65,7 @@ async def get_products():
                 value=json_serializer(product, SerializationContext("products", MessageField.VALUE)),
                 callback=delivery_report
             )
-            time.sleep(30)
+            time.sleep(5)
         producer.flush()
         return {"status": "Сообщение отправлено успешно"}
     except Exception as e:
