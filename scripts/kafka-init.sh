@@ -3,13 +3,17 @@
 # Команда для создания топика products
 kafka-topics --create --topic products --bootstrap-server kafka-0:9010 --partitions 3 --replication-factor 2 --command-config /etc/kafka/secrets/adminclient-configs.conf
 
-# Дать продюсеру права на запись в топик products
+# Команда для создания топика search-products
+kafka-topics --create --topic search-products --bootstrap-server kafka-0:9010 --partitions 3 --replication-factor 2 --command-config /etc/kafka/secrets/adminclient-configs.conf
+
+# Дать продюсеру права на запись в топик products и search-products
 kafka-acls --bootstrap-server kafka-0:9010  \
 --command-config /etc/kafka/secrets/adminclient-configs.conf \
 --add   --allow-principal User:producer \
 --allow-principal User:producer  \
 --operation write \
---topic products 
+--topic products \
+--topic search-products
 
 # Дать консьюмеру права на чтение топика topic-1
 kafka-acls --bootstrap-server kafka-0:9010  \

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Path to wait-for-it.sh script
+#WAIT_FOR_IT_SCRIPT="./wait-for-it.sh"
+
+# Wait for schema-registry to be available
+#$WAIT_FOR_IT_SCRIPT schema-registry:8081 --timeout=60 --strict -- echo "Schema Registry is up"
+
 SCHEMA='{
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
