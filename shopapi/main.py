@@ -39,9 +39,6 @@ producer_conf = {
     "sasl.password": "producer",  # Пароль пользователя для аутентификации
 }
 
-# создание продюсера
-producer = Producer(producer_conf)
-
 def delivery_report(err, msg):
     """
     Проверить статус доставки сообщения
@@ -57,6 +54,8 @@ async def root():
 
 @app.get("/products")
 async def get_products():
+    # создание продюсера
+    producer = Producer(producer_conf)
     try:
         # Открываем файл и читаем данные
         with open('products.json', 'r', encoding='utf-8') as file:
