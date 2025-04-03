@@ -35,8 +35,8 @@ producer_conf = {
 
     "security.protocol": "SASL_SSL",
     "ssl.ca.location": "ca.crt",  # Сертификат центра сертификации
-    "ssl.certificate.location": "kafka-1.crt",  # Сертификат клиента Kafka
-    "ssl.key.location": "kafka-1.key",  # Приватный ключ для клиента Kafka
+    "ssl.certificate.location": "target-kafka-1.crt",  # Сертификат клиента Kafka
+    "ssl.key.location": "target-kafka-1.key",  # Приватный ключ для клиента Kafka
 
     "sasl.mechanism": "PLAIN",  # Используемый механизм SASL (PLAIN)
     "sasl.username": "producer",  # Имя пользователя для аутентификации

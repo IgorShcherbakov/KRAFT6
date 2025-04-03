@@ -125,7 +125,7 @@ services:
       - "9010:9010"
     volumes:
       - data-kafka-0:/var/lib/kafka/data
-      - ./kafka-0-creds:/etc/kafka/secrets
+      - ./creds/kafka-0-creds:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 0
@@ -151,7 +151,7 @@ services:
       - "9011:9011"
     volumes:
       - data-kafka-1:/var/lib/kafka/data
-      - ./kafka-1-creds:/etc/kafka/secrets
+      - ./creds/kafka-1-creds:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 1
@@ -177,7 +177,7 @@ services:
       - "9012:9012"
     volumes:
       - data-kafka-2:/var/lib/kafka/data
-      - ./kafka-2-creds:/etc/kafka/secrets
+      - ./creds/kafka-2-creds:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 2
@@ -202,7 +202,7 @@ services:
     volumes:
       - ./scripts/kafka-init.sh:/usr/bin/kafka-init.sh
       - ./scripts/wait-for-it.sh:/usr/bin/wait-for-it.sh
-      - ./kafka-0-creds:/etc/kafka/secrets
+      - ./creds/kafka-0-creds:/etc/kafka/secrets
     environment:
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
     entrypoint: ["sh", "-c", "/usr/bin/wait-for-it.sh kafka-0:9010 --timeout=60 --strict -- /usr/bin/wait-for-it.sh kafka-1:9011 --timeout=60 --strict -- /usr/bin/wait-for-it.sh kafka-2:9012 --timeout=60 --strict -- /usr/bin/kafka-init.sh"]
