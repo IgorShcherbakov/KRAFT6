@@ -4,8 +4,8 @@ FROM python:3.9
 #копируем нужные файлы
 COPY main.py main.py
 COPY ca.crt ca.crt
-COPY kafka-1.crt kafka-1.crt
-COPY kafka-1.key kafka-1.key
+COPY target-kafka-1.crt target-kafka-1.crt
+COPY target-kafka-1.key target-kafka-1.key
 
 #установим нужные зависимости
 RUN pip install fastapi uvicorn confluent-kafka hdfs

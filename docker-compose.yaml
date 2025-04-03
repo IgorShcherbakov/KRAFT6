@@ -243,19 +243,19 @@ services:
       - "10010:10010"
     volumes:
       - target-data-kafka-0:/var/lib/kafka/data
-      - ./kafka-0-creds:/etc/kafka/secrets
+      - ./target-kafka-0-creds:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 0
       KAFKA_ZOOKEEPER_CONNECT: target-zookeeper:2182
       KAFKA_LISTENERS: SASL_PLAINTEXT://0.0.0.0:10090,SSL://0.0.0.0:10091,EXTERNAL_SASL://0.0.0.0:10010
       KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://target-kafka-0:10090,SSL://target-kafka-0:10091,EXTERNAL_SASL://target-kafka-0:10010
-      KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka-0.keystore.pkcs12
-      KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka-0_keystore_creds
-      KAFKA_SSL_KEY_CREDENTIALS: kafka-0_sslkey_creds
-      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka-0.truststore.jks
-      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka-0_truststore_creds
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka-0.sasl.jaas.conf"
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.target-kafka-0.keystore.pkcs12
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: target-kafka-0_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: target-kafka-0_sslkey_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.target-kafka-0.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: target-kafka-0_truststore_creds
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/target-kafka-0.sasl.jaas.conf"
   target-kafka-1:
     <<: *kafka-common
     restart: always
@@ -269,19 +269,19 @@ services:
       - "10011:10011"
     volumes:
       - target-data-kafka-1:/var/lib/kafka/data
-      - ./kafka-1-creds:/etc/kafka/secrets
+      - ./target-kafka-1-creds:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: target-zookeeper:2182
       KAFKA_LISTENERS: SASL_PLAINTEXT://0.0.0.0:10092,SSL://0.0.0.0:10093,EXTERNAL_SASL://0.0.0.0:10011
       KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://target-kafka-1:10092,SSL://target-kafka-1:10093,EXTERNAL_SASL://target-kafka-1:10011
-      KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka-1.keystore.pkcs12
-      KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka-1_keystore_creds
-      KAFKA_SSL_KEY_CREDENTIALS: kafka-1_sslkey_creds
-      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka-1.truststore.jks
-      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka-1_truststore_creds
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka-1.sasl.jaas.conf"
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.target-kafka-1.keystore.pkcs12
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: target-kafka-1_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: target-kafka-1_sslkey_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.target-kafka-1.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: target-kafka-1_truststore_creds
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/target-kafka-1.sasl.jaas.conf"
   target-kafka-2:
     <<: *kafka-common
     restart: always
@@ -295,19 +295,19 @@ services:
       - "10012:10012"
     volumes:
       - target-data-kafka-2:/var/lib/kafka/data
-      - ./kafka-2-creds:/etc/kafka/secrets
+      - ./target-kafka-2-creds:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 2
       KAFKA_ZOOKEEPER_CONNECT: target-zookeeper:2182
       KAFKA_LISTENERS: SASL_PLAINTEXT://0.0.0.0:10094,SSL://0.0.0.0:10095,EXTERNAL_SASL://0.0.0.0:10012
       KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://target-kafka-2:10094,SSL://target-kafka-2:10095,EXTERNAL_SASL://target-kafka-2:10012
-      KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka-2.keystore.pkcs12
-      KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka-2_keystore_creds
-      KAFKA_SSL_KEY_CREDENTIALS: kafka-2_sslkey_creds
-      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka-2.truststore.jks
-      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka-2_truststore_creds
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka-2.sasl.jaas.conf"
+      KAFKA_SSL_KEYSTORE_FILENAME: kafka.target-kafka-2.keystore.pkcs12
+      KAFKA_SSL_KEYSTORE_CREDENTIALS: target-kafka-2_keystore_creds
+      KAFKA_SSL_KEY_CREDENTIALS: target-kafka-2_sslkey_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.target-kafka-2.truststore.jks
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: target-kafka-2_truststore_creds
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/target-kafka-2.sasl.jaas.conf"
   target-kafka-init:
     image: confluentinc/cp-kafka:7.4.4
     container_name: target-kafka-init
@@ -320,7 +320,7 @@ services:
     volumes:
       - ./scripts/target-kafka-init.sh:/usr/bin/target-kafka-init.sh
       - ./scripts/wait-for-it.sh:/usr/bin/wait-for-it.sh
-      - ./kafka-0-creds:/etc/kafka/secrets
+      - ./target-kafka-0-creds:/etc/kafka/secrets
     environment:
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
     entrypoint: ["sh", "-c", "/usr/bin/wait-for-it.sh target-kafka-0:10010 --timeout=60  --strict -- /usr/bin/target-kafka-init.sh"]
@@ -409,6 +409,8 @@ services:
     ports:
       - "9870:9870"  # HTTP-порт для Web UI HDFS NameNode
       - "9000:9000"  # RPC порт для запросов к NameNode
+    networks:
+      - kafka-network
     volumes:
       - ./hadoop/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
       - ./hadoop/hdfs-site-namenode.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml
@@ -433,6 +435,8 @@ services:
     ports:
       - "9864:9864"  # HTTP-порт для Web UI DataNode №1
       - "9970:9970"  # RPC порт для запросов от NameNode
+    networks:
+      - kafka-network
     volumes:
       - ./hadoop/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
       - ./hadoop/hdfs-site-datanode-1.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml
@@ -457,6 +461,8 @@ services:
     ports:
       - "9865:9865"  # HTTP-порт для Web UI DataNode №2
       - "9971:9971"  # RPC порт для запросов от NameNode
+    networks:
+      - kafka-network
     volumes:
       - ./hadoop/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
       - ./hadoop/hdfs-site-datanode-2.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml
@@ -481,6 +487,8 @@ services:
     ports:
       - "9866:9866"  # HTTP-порт для Web UI DataNode №3
       - "9972:9972"  # RPC порт для запросов от NameNode
+    networks:
+      - kafka-network
     volumes:
       - ./hadoop/core-site.xml:/opt/hadoop/etc/hadoop/core-site.xml
       - ./hadoop/hdfs-site-datanode-3.xml:/opt/hadoop/etc/hadoop/hdfs-site.xml
