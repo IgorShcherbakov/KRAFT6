@@ -11,20 +11,20 @@ kafka-acls --bootstrap-server target-kafka-0:10010  \
 --operation write \
 --topic recommendations
 
-# Дать консьюмеру права на чтение топика topic-1
+# Дать консьюмеру права на чтение топика products
 kafka-acls --bootstrap-server target-kafka-0:10010  \
 --command-config /etc/kafka/secrets/adminclient-configs.conf \
 --add   --allow-principal User:consumer \
 --allow-principal User:consumer  \
 --operation read \
---topic recommendations 
+--topic products 
 
 # Дать консьюмеру доступ к группе консьюмеров
 kafka-acls --bootstrap-server target-kafka-0:10010 \
 --command-config /etc/kafka/secrets/adminclient-configs.conf \
 --add --allow-principal User:consumer \
 --operation Read \
---group consumer-ssl-group
+--group consumer-ssl-group-hadoop
 
 # Завершение скрипта
 exit 0

@@ -17,13 +17,13 @@ app = FastAPI(title="HadoopAPI")
 
 consumer_conf = {
     "bootstrap.servers": "target-kafka-1:10011",
-    "group.id": "consumer-ssl-group",
+    "group.id": "consumer-ssl-group-hadoop",
     "auto.offset.reset": "earliest",
 
     "security.protocol": "SASL_SSL", 
     "ssl.ca.location": "ca.crt",  # Сертификат центра сертификации
-    "ssl.certificate.location": "kafka-1.crt",  # Сертификат клиента Kafka
-    "ssl.key.location": "kafka-1.key",  # Приватный ключ для клиента Kafka
+    "ssl.certificate.location": "target-kafka-1.crt",  # Сертификат клиента Kafka
+    "ssl.key.location": "target-kafka-1.key",  # Приватный ключ для клиента Kafka
 
     "sasl.mechanism": "PLAIN",  # Используемый механизм SASL (PLAIN)
     "sasl.username": "consumer",  # Имя пользователя для аутентификации
@@ -63,9 +63,10 @@ async def get_data():
 
     try:
         while True:
-            message = consumer.poll(0.1)
+            message = consumer.poll(10.0)
 
             if message is None:
+                logger.info(f"В топике нет сообщений!")
                 break
             if message.error():
                 logger.error(f"Ошибка топика {message.topic()}: {message.error()}")
@@ -86,6 +87,15 @@ async def get_data():
                 content = reader.read()
             logger.info(f"Чтение файла '{hdfs_file}' из HDFS. Содержимое файла: '{content.strip()}'")
 
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content="Сообщение отправлено успешно."
+        )
+    except Exception as e:
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content=f"Ошибка при отправке сообщения: {e}."
+    )
     finally:
         consumer.close()
     
