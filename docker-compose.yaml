@@ -99,7 +99,7 @@ services:
     volumes:
       - data-zookeeper-log-1:/var/lib/zookeeper/log
       - data-zookeeper-data-1:/var/lib/zookeeper/data
-      - ./zookeeper-creds:/etc/zookeeper/secrets
+      - ./creds/zookeeper-creds:/etc/zookeeper/secrets
     networks:
       - kafka-network
     environment:
@@ -217,7 +217,7 @@ services:
     volumes:
       - target-data-zookeeper-log-1:/var/lib/zookeeper/log
       - target-data-zookeeper-data-1:/var/lib/zookeeper/data
-      - ./zookeeper-creds:/etc/zookeeper/secrets
+      - ./creds/zookeeper-creds:/etc/zookeeper/secrets
     networks:
       - kafka-network
     environment:
@@ -243,7 +243,7 @@ services:
       - "10010:10010"
     volumes:
       - target-data-kafka-0:/var/lib/kafka/data
-      - ./target-kafka-0-creds:/etc/kafka/secrets
+      - ./creds/target-kafka-0-creds:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 0
@@ -269,7 +269,7 @@ services:
       - "10011:10011"
     volumes:
       - target-data-kafka-1:/var/lib/kafka/data
-      - ./target-kafka-1-creds:/etc/kafka/secrets
+      - ./creds/target-kafka-1-creds:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 1
@@ -295,7 +295,7 @@ services:
       - "10012:10012"
     volumes:
       - target-data-kafka-2:/var/lib/kafka/data
-      - ./target-kafka-2-creds:/etc/kafka/secrets
+      - ./creds/target-kafka-2-creds:/etc/kafka/secrets
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 2
@@ -320,7 +320,7 @@ services:
     volumes:
       - ./scripts/target-kafka-init.sh:/usr/bin/target-kafka-init.sh
       - ./scripts/wait-for-it.sh:/usr/bin/wait-for-it.sh
-      - ./target-kafka-0-creds:/etc/kafka/secrets
+      - ./creds/target-kafka-0-creds:/etc/kafka/secrets
     environment:
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
     entrypoint: ["sh", "-c", "/usr/bin/wait-for-it.sh target-kafka-0:10010 --timeout=60  --strict -- /usr/bin/target-kafka-init.sh"]
