@@ -507,6 +507,14 @@ services:
     networks:
       - kafka-network
 
+  streamprocessing:
+    build:
+      context: ./streamprocessing
+    container_name: streamprocessing
+    depends_on:
+      - kafka-1
+    networks:
+      - kafka-network
 
 volumes:
   data-zookeeper-log-1:

@@ -9,6 +9,8 @@ kafka-topics --create --topic search-products --bootstrap-server kafka-0:9010 --
 # Команда для создания топика ban-products
 kafka-topics --create --topic ban-products --bootstrap-server kafka-0:9010 --partitions 3 --replication-factor 2 --command-config /etc/kafka/secrets/adminclient-configs.conf
 
+# Команда для создания топика sfa-ban_products-changelog (faust создает не корректно)
+kafka-topics --create --topic sfa-ban_products-changelog --bootstrap-server kafka-0:9010 --partitions 3 --replication-factor 2 --command-config /etc/kafka/secrets/adminclient-configs.conf
 
 # Дать продюсеру права на запись в топик products и search-products
 kafka-acls --bootstrap-server kafka-0:9010  \

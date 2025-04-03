@@ -77,8 +77,8 @@ async def set_ban_products(product_id: int):
     producer = Producer(producer_conf)
     try:
         producer.produce(
-            topic="ban-products",  # Укажите ваш топик
-            key="bp",  # Используйте уникальный идентификатор продукта в качестве ключа
+            topic="ban-products",
+            key=str(product_id), 
             value=str(product_id),
             callback=delivery_report
         )
