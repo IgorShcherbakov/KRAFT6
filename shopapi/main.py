@@ -40,8 +40,8 @@ def delivery_report(err, msg):
     else:
         logger.info(f"Сообщение «{msg.__str__()}» доставлено в {msg.topic()} [{msg.partition()}]")
 
-@app.get("/products")
-async def get_products():
+@app.post("/products")
+async def set_products():
     schema_registry_client = SchemaRegistryClient(schema_registry_conf)
 
     # Получаем последнюю версию схемы по имени
@@ -66,6 +66,22 @@ async def get_products():
                 callback=delivery_report
             )
             time.sleep(5)
+        producer.flush()
+        return {"status": "Сообщение отправлено успешно"}
+    except Exception as e:
+        logger.error(f"Ошибка при отправке сообщения: {e}")
+        raise HTTPException(status_code=500, detail="Ошибка при отправке сообщения")
+    
+@app.post("/ban_products")
+async def set_ban_products(product_id: int):
+    producer = Producer(producer_conf)
+    try:
+        producer.produce(
+            topic="ban-products",  # Укажите ваш топик
+            key="bp",  # Используйте уникальный идентификатор продукта в качестве ключа
+            value=str(product_id),
+            callback=delivery_report
+        )
         producer.flush()
         return {"status": "Сообщение отправлено успешно"}
     except Exception as e:

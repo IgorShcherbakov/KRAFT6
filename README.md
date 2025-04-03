@@ -62,7 +62,18 @@ ok
 
 
 ## Пример использования
+
 ### 1. Поднять контейнеры
+
 ```bash
 docker compose up -d
 ```
+
+### 2. Перейти в UI Kafka
+
+```bash
+http://localhost:8080/
+```
+Убедиться что поднято 2 кластера:
+
+![alt text](resources/two_clusters.png)
