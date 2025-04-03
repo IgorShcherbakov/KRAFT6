@@ -2,7 +2,7 @@
 FROM python:3.11
 
 #установим нужные зависимости
-RUN pip install confluent-kafka faust-streaming==0.11.3
+RUN pip install confluent-kafka[json] faust-streaming==0.11.3
 
 #копируем нужные файлы
 COPY main.py main.py
