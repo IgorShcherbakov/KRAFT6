@@ -516,6 +516,53 @@ services:
     networks:
       - kafka-network
 
+  kafka-connect:
+    image: confluentinc/cp-kafka-connect:latest
+    container_name: kafka-connect
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka-0:9010
+      CONNECT_REST_ADVERTISED_HOST_NAME: kafka-connect
+      CONNECT_GROUP_ID: "quickstart"
+      CONNECT_CONFIG_STORAGE_TOPIC: "connect-configs"
+      CONNECT_OFFSET_STORAGE_TOPIC: "connect-offsets"
+      CONNECT_STATUS_STORAGE_TOPIC: "connect-status"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.storage.StringConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_REST_PORT: 8083
+      CONNECT_PLUGIN_PATH: /usr/share/java,/etc/kafka-connect/jars
+
+      CONNECT_SECURITY_PROTOCOL: SASL_SSL
+      CONNECT_SASL_MECHANISM: PLAIN
+      CONNECT_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required username='admin' password='admin-secret';"
+      CONNECT_SSL_TRUSTSTORE_LOCATION: /etc/kafka-connect/secrets/kafka.kafka-0.truststore.jks
+      CONNECT_SSL_TRUSTSTORE_PASSWORD: kafka-0
+      CONNECT_SSL_KEYSTORE_LOCATION: /etc/kafka-connect/secrets/kafka.kafka-0.keystore.pkcs12
+      CONNECT_SSL_KEYSTORE_PASSWORD: kafka-0
+
+      CONNECT_CONSUMER_SECURITY_PROTOCOL: SASL_SSL
+      CONNECT_CONSUMER_SASL_MECHANISM: PLAIN
+      CONNECT_CONSUMER_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required username='admin' password='admin-secret';"
+      CONNECT_CONSUMER_SSL_TRUSTSTORE_LOCATION: /etc/kafka-connect/secrets/kafka.kafka-0.truststore.jks
+      CONNECT_CONSUMER_SSL_TRUSTSTORE_PASSWORD: kafka-0
+      CONNECT_CONSUMER_SSL_KEYSTORE_LOCATION: /etc/kafka-connect/secrets/kafka.kafka-0.keystore.pkcs12
+      CONNECT_CONSUMER_SSL_KEYSTORE_PASSWORD: kafka-0
+    depends_on:
+      - kafka-0  
+      - kafka-1
+      - kafka-2
+      - schema-registry
+    volumes:
+      - ./creds/kafka-0-creds:/etc/kafka-connect/secrets
+      - ./kafka-connect/create-connector.sh:/etc/kafka-connect/create-connector.sh
+      - ./kafka-connect/connect-file-3.9.0.jar:/etc/kafka-connect/jars/connect-file-3.9.0.jar
+    #entrypoint: ["sh", "-c", "/etc/confluent/docker/run & sh /etc/kafka-connect/create-connector.sh"]
+    networks:
+      - kafka-network
+
 volumes:
   data-zookeeper-log-1:
   data-zookeeper-data-1:
