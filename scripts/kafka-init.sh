@@ -1,5 +1,13 @@
 #!/bin/bash
 
+echo "Waiting for Kafka to start..."
+while ! nc -z kafka-0 9010; do
+  echo "Kafka is not available yet. Retrying in 5 seconds..."
+  sleep 5
+done
+
+echo "Kafka is up. Proceeding with topic creation and ACL setup."
+
 # Команда для создания топика products
 kafka-topics --create --topic products --bootstrap-server kafka-0:9010 --partitions 3 --replication-factor 2 --command-config /etc/kafka/secrets/adminclient-configs.conf
 

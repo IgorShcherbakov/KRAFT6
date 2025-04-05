@@ -92,5 +92,5 @@ http://localhost:8080/
 
 Проверить что данные из топика попали в файл
 ```bash
-docker exec 27234d1e263e5aa41495ae2c3fa0e315d464958b3cf52e2857d5b10418053267 cat /home/appuser/products.out
+docker exec 20db32c63d2690b1ae93d4c1b0e7fe24a707b40b92bde6ea7f60a5a204d2d945 cat /home/appuser/products.out
 ```
