@@ -1,0 +1,63 @@
+rules:
+  - pattern: "kafka.server<type=(.+), name=(.+)PerSec><>Count"
+    name: "kafka_server_$1_$2_total"
+    help: "Kafka server $1 $2 total"
+    type: COUNTER
+    labels:
+      instance: "$0"
+
+  - pattern: "kafka.server<type=(.+), name=(.+)><>Count"
+    name: "kafka_server_$1_$2_total"
+    help: "Kafka server $1 $2 total"
+    type: COUNTER
+    labels:
+      instance: "$0"
+
+  - pattern: "kafka.server<type=(.+), name=(.+)><>Value"
+    name: "kafka_server_$1_$2"
+    help: "Kafka server $1 $2"
+    type: GAUGE
+    labels:
+      instance: "$0"
+
+  - pattern: "kafka.network<type=(.+), name=(.+)><>Count"
+    name: "kafka_network_$1_$2_total"
+    help: "Kafka network $1 $2 total"
+    type: COUNTER
+    labels:
+      instance: "$0"
+
+  - pattern: "kafka.network<type=(.+), name=(.+)><>Value"
+    name: "kafka_network_$1_$2"
+    help: "Kafka network $1 $2"
+    type: GAUGE
+    labels:
+      instance: "$0"
+
+  - pattern: "kafka.log<type=(.+), name=(.+)><>Count"
+    name: "kafka_log_$1_$2_total"
+    help: "Kafka log $1 $2 total"
+    type: COUNTER
+    labels:
+      instance: "$0"
+
+  - pattern: "kafka.log<type=(.+), name=(.+)><>Value"
+    name: "kafka_log_$1_$2"
+    help: "Kafka log $1 $2"
+    type: GAUGE
+    labels:
+      instance: "$0"
+
+  - pattern: "kafka.controller<type=(.+), name=(.+)><>Count"
+    name: "kafka_controller_$1_$2_total"
+    help: "Kafka controller $1 $2 total"
+    type: COUNTER
+    labels:
+      instance: "$0"
+
+  - pattern: "kafka.controller<type=(.+), name=(.+)><>Value"
+    name: "kafka_controller_$1_$2"
+    help: "Kafka controller $1 $2"
+    type: GAUGE
+    labels:
+      instance: "$0"
