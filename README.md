@@ -49,6 +49,9 @@ Swagger - http://localhost:8087/docs
 ### 25. kafka-connect
 Сервис для сохранения данных из топика в файл.
 
+### 26. kafka-connect-init
+Сервис для регистрации коннектора.
+
 ### Шаг 1. Создайте источники данных
 ok
 
@@ -85,3 +88,9 @@ http://localhost:8080/
 Убедиться что поднято 2 кластера:
 
 ![alt text](resources/two_clusters.png)
+
+
+Проверить что данные из топика попали в файл
+```bash
+docker exec 27234d1e263e5aa41495ae2c3fa0e315d464958b3cf52e2857d5b10418053267 cat /home/appuser/products.out
+```
