@@ -77,9 +77,9 @@ services:
       SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: "SASL_PLAINTEXT"
       SCHEMA_REGISTRY_KAFKASTORE_SASL_MECHANISM: "PLAIN"
       SCHEMA_REGISTRY_KAFKASTORE_SASL_JAAS_CONFIG: "org.apache.kafka.common.security.plain.PlainLoginModule required username='admin' password='admin-secret';"
-  schema-registrar:
+  schema-registry-init:
     image: alpine:latest
-    container_name: schema-registrar
+    container_name: schema-registry-init
     depends_on:
       - schema-registry
     networks:
@@ -200,12 +200,11 @@ services:
       - kafka-network
     volumes:
       - ./scripts/kafka-init.sh:/usr/bin/kafka-init.sh
-      - ./scripts/wait-for-it.sh:/usr/bin/wait-for-it.sh
       - ./creds/kafka-0-creds:/etc/kafka/secrets
     environment:
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
-    entrypoint: ["sh", "-c", "/usr/bin/wait-for-it.sh kafka-0:9010 --timeout=60 --strict -- /usr/bin/wait-for-it.sh kafka-1:9011 --timeout=60 --strict -- /usr/bin/wait-for-it.sh kafka-2:9012 --timeout=60 --strict -- /usr/bin/kafka-init.sh"]
-  
+    entrypoint: ["sh", "-c", "sh /usr/bin/kafka-init.sh"]
+
   target-zookeeper:
     image: confluentinc/cp-zookeeper:7.4.4
     restart: always
@@ -318,11 +317,10 @@ services:
       - kafka-network
     volumes:
       - ./scripts/target-kafka-init.sh:/usr/bin/target-kafka-init.sh
-      - ./scripts/wait-for-it.sh:/usr/bin/wait-for-it.sh
       - ./creds/target-kafka-0-creds:/etc/kafka/secrets
     environment:
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
-    entrypoint: ["sh", "-c", "/usr/bin/wait-for-it.sh target-kafka-0:10010 --timeout=60  --strict -- /usr/bin/target-kafka-init.sh"]
+    entrypoint: ["sh", "-c", "sh /usr/bin/target-kafka-init.sh"]
 
   mirror-maker:
     image: confluentinc/cp-kafka:7.4.4
@@ -569,7 +567,7 @@ services:
     networks:
       - kafka-network
     volumes:
-      - ./kafka-connect/create-connector.sh:/etc/kafka-connect/create-connector.sh
+      - ./scripts/create-connector.sh:/etc/kafka-connect/create-connector.sh
     entrypoint: ["sh", "-c", "apk add --no-cache curl && sh /etc/kafka-connect/create-connector.sh"]
 
 volumes:
