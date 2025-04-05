@@ -600,6 +600,7 @@ services:
       - "9060:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/alert.rules:/etc/prometheus/alert.rules
     networks:
       - kafka-network
 
@@ -618,6 +619,18 @@ services:
       - ./grafana:/var/lib/grafana
       - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
       - ./grafana/dashboards:/var/lib/grafana/dashboards
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    depends_on:
+      - prometheus
+    ports:
+      - "29093:9093"
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    networks:
+      - kafka-network
 
 volumes:
   data-zookeeper-log-1:
