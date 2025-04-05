@@ -509,7 +509,12 @@ services:
       context: ./streamprocessing
     container_name: streamprocessing
     depends_on:
+      - kafka-0
       - kafka-1
+      - kafka-2
+      - kafka-init
+      - schema-registry
+      - schema-registry-init
     networks:
       - kafka-network
 
