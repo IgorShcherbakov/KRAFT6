@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka-0:7070', 'kafka-1:7071', 'kafka-2:7072']
+
+  - job_name: 'target-kafka'
+    static_configs:
+      - targets: ['target-kafka-0:17070', 'target-kafka-1:17071', 'target-kafka-2:17072']

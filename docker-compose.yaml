@@ -122,9 +122,12 @@ services:
       - "9090:9090"
       - "9091:9091"
       - "9010:9010"
+      - "7070:7071"  # Port for JMX Exporter
     volumes:
       - data-kafka-0:/var/lib/kafka/data
       - ./creds/kafka-0-creds:/etc/kafka/secrets
+      - ./prometheus/jmx_prometheus_javaagent-0.15.0.jar:/etc/jmx/jmx_prometheus_javaagent-0.15.0.jar
+      - ./prometheus/kafka-2_0_0.yml:/etc/jmx/kafka-2_0_0.yml
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 0
@@ -136,7 +139,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: kafka-0_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka-0.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka-0_truststore_creds
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka-0.sasl.jaas.conf"
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka-0.sasl.jaas.conf -javaagent:/etc/jmx/jmx_prometheus_javaagent-0.15.0.jar=7070:/etc/jmx/kafka-2_0_0.yml"
   kafka-1:
     <<: *kafka-common
     restart: always
@@ -148,9 +151,12 @@ services:
       - "9092:9092"
       - "9093:9093"
       - "9011:9011"
+      - "7071:7071"  # Port for JMX Exporter
     volumes:
       - data-kafka-1:/var/lib/kafka/data
       - ./creds/kafka-1-creds:/etc/kafka/secrets
+      - ./prometheus/jmx_prometheus_javaagent-0.15.0.jar:/etc/jmx/jmx_prometheus_javaagent-0.15.0.jar
+      - ./prometheus/kafka-2_0_0.yml:/etc/jmx/kafka-2_0_0.yml
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 1
@@ -162,7 +168,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: kafka-1_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka-1.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka-1_truststore_creds
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka-1.sasl.jaas.conf"
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka-1.sasl.jaas.conf -javaagent:/etc/jmx/jmx_prometheus_javaagent-0.15.0.jar=7071:/etc/jmx/kafka-2_0_0.yml"
   kafka-2:
     <<: *kafka-common
     restart: always
@@ -174,9 +180,12 @@ services:
       - "9094:9094"
       - "9095:9095"
       - "9012:9012"
+      - "7072:7071"  # Port for JMX Exporter
     volumes:
       - data-kafka-2:/var/lib/kafka/data
       - ./creds/kafka-2-creds:/etc/kafka/secrets
+      - ./prometheus/jmx_prometheus_javaagent-0.15.0.jar:/etc/jmx/jmx_prometheus_javaagent-0.15.0.jar
+      - ./prometheus/kafka-2_0_0.yml:/etc/jmx/kafka-2_0_0.yml
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 2
@@ -188,7 +197,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: kafka-2_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka-2.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka-2_truststore_creds
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka-2.sasl.jaas.conf"
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/kafka-2.sasl.jaas.conf -javaagent:/etc/jmx/jmx_prometheus_javaagent-0.15.0.jar=7072:/etc/jmx/kafka-2_0_0.yml"
   kafka-init:
     image: confluentinc/cp-kafka:7.4.4
     container_name: kafka-init
@@ -239,9 +248,12 @@ services:
       - "10090:10090"
       - "10091:10091"
       - "10010:10010"
+      - "17070:7071"  # Port for JMX Exporter
     volumes:
       - target-data-kafka-0:/var/lib/kafka/data
       - ./creds/target-kafka-0-creds:/etc/kafka/secrets
+      - ./prometheus/jmx_prometheus_javaagent-0.15.0.jar:/etc/jmx/jmx_prometheus_javaagent-0.15.0.jar
+      - ./prometheus/kafka-2_0_0.yml:/etc/jmx/kafka-2_0_0.yml
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 0
@@ -253,7 +265,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: target-kafka-0_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.target-kafka-0.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: target-kafka-0_truststore_creds
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/target-kafka-0.sasl.jaas.conf"
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/target-kafka-0.sasl.jaas.conf -javaagent:/etc/jmx/jmx_prometheus_javaagent-0.15.0.jar=17070:/etc/jmx/kafka-2_0_0.yml"
   target-kafka-1:
     <<: *kafka-common
     restart: always
@@ -265,9 +277,12 @@ services:
       - "10092:10092"
       - "10093:10093"
       - "10011:10011"
+      - "17071:7071"  # Port for JMX Exporter
     volumes:
       - target-data-kafka-1:/var/lib/kafka/data
       - ./creds/target-kafka-1-creds:/etc/kafka/secrets
+      - ./prometheus/jmx_prometheus_javaagent-0.15.0.jar:/etc/jmx/jmx_prometheus_javaagent-0.15.0.jar
+      - ./prometheus/kafka-2_0_0.yml:/etc/jmx/kafka-2_0_0.yml
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 1
@@ -279,7 +294,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: target-kafka-1_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.target-kafka-1.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: target-kafka-1_truststore_creds
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/target-kafka-1.sasl.jaas.conf"
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/target-kafka-1.sasl.jaas.conf -javaagent:/etc/jmx/jmx_prometheus_javaagent-0.15.0.jar=17071:/etc/jmx/kafka-2_0_0.yml"
   target-kafka-2:
     <<: *kafka-common
     restart: always
@@ -291,9 +306,12 @@ services:
       - "10094:10094"
       - "10095:10095"
       - "10012:10012"
+      - "17072:7071"  # Port for JMX Exporter
     volumes:
       - target-data-kafka-2:/var/lib/kafka/data
       - ./creds/target-kafka-2-creds:/etc/kafka/secrets
+      - ./prometheus/jmx_prometheus_javaagent-0.15.0.jar:/etc/jmx/jmx_prometheus_javaagent-0.15.0.jar
+      - ./prometheus/kafka-2_0_0.yml:/etc/jmx/kafka-2_0_0.yml
     environment:
       <<: *kafka-common-env
       KAFKA_BROKER_ID: 2
@@ -305,7 +323,7 @@ services:
       KAFKA_SSL_KEY_CREDENTIALS: target-kafka-2_sslkey_creds
       KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.target-kafka-2.truststore.jks
       KAFKA_SSL_TRUSTSTORE_CREDENTIALS: target-kafka-2_truststore_creds
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/target-kafka-2.sasl.jaas.conf"
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/secrets/target-kafka-2.sasl.jaas.conf -javaagent:/etc/jmx/jmx_prometheus_javaagent-0.15.0.jar=17072:/etc/jmx/kafka-2_0_0.yml"
   target-kafka-init:
     image: confluentinc/cp-kafka:7.4.4
     container_name: target-kafka-init
@@ -509,7 +527,12 @@ services:
       context: ./streamprocessing
     container_name: streamprocessing
     depends_on:
+      - kafka-0
       - kafka-1
+      - kafka-2
+      - kafka-init
+      - schema-registry
+      - schema-registry-init
     networks:
       - kafka-network
 
@@ -569,6 +592,16 @@ services:
     volumes:
       - ./scripts/create-connector.sh:/etc/kafka-connect/create-connector.sh
     entrypoint: ["sh", "-c", "apk add --no-cache curl && sh /etc/kafka-connect/create-connector.sh"]
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9060:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - kafka-network
 
 volumes:
   data-zookeeper-log-1:
