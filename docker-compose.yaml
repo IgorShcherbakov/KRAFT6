@@ -85,9 +85,8 @@ services:
     networks:
       - kafka-network
     volumes:
-      - ./scripts/wait-for-it.sh:/usr/bin/wait-for-it.sh
       - ./scripts/register-schema.sh:/usr/bin/register-schema.sh
-    entrypoint: ["sh", "-c", "apk add --no-cache bash curl && chmod +x /usr/bin/wait-for-it.sh /usr/bin/register-schema.sh && /usr/bin/wait-for-it.sh schema-registry:8081 --timeout=120 --strict -- /usr/bin/register-schema.sh"]
+    entrypoint: ["sh", "-c", "apk add --no-cache bash curl && chmod +x /usr/bin/register-schema.sh && /usr/bin/register-schema.sh"]
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.4
@@ -557,11 +556,21 @@ services:
       - schema-registry
     volumes:
       - ./creds/kafka-0-creds:/etc/kafka-connect/secrets
-      - ./kafka-connect/create-connector.sh:/etc/kafka-connect/create-connector.sh
+      #- ./kafka-connect/create-connector.sh:/etc/kafka-connect/create-connector.sh
       - ./kafka-connect/connect-file-3.9.0.jar:/etc/kafka-connect/jars/connect-file-3.9.0.jar
-    #entrypoint: ["sh", "-c", "/etc/confluent/docker/run & sh /etc/kafka-connect/create-connector.sh"]
+    #entrypoint: ["sh", "-c", "/etc/confluent/docker/run & sh /etc/kafka-connect/create-connector.sh && wait"]
     networks:
       - kafka-network
+  kafka-connect-init:
+    image: alpine:latest
+    container_name: kafka-connect-init
+    depends_on:
+      - kafka-connect
+    networks:
+      - kafka-network
+    volumes:
+      - ./kafka-connect/create-connector.sh:/etc/kafka-connect/create-connector.sh
+    entrypoint: ["sh", "-c", "apk add --no-cache curl && sh /etc/kafka-connect/create-connector.sh"]
 
 volumes:
   data-zookeeper-log-1:
