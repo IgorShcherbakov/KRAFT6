@@ -173,3 +173,9 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 .qodo
+
+/grafana/plugins
+/grafana/csv
+/grafana/pdf
+/grafana/png
+/grafana/grafana.db
