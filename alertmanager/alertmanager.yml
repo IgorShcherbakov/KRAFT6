@@ -1,0 +1,15 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: 'default'
+
+receivers:
+  - name: 'default'
+    email_configs:
+      - to: 'to@yandex.ru'
+        from: 'from@yandex.ru'
+        smarthost: 'smtp.yandex.com:587'
+        auth_username: 'auth_username'
+        auth_password: 'auth_password'
+        require_tls: true

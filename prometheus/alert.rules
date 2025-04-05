@@ -1,0 +1,11 @@
+groups:
+- name: kafka-alerts
+  rules:
+  - alert: KafkaBrokerDown
+    expr: up{job="kafka"} == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Kafka broker is down"
+      description: "The Kafka broker instance {{ $labels.instance }} is down for more than 1 minute."
