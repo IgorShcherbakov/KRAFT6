@@ -77,52 +77,51 @@ http://localhost:8080/
 
 Убедиться что поднято 2 кластера:
 
-![alt text](resources/two_clusters.png)
-![alt text](image.png)
+![alt text](resources/image.png)
 
 Проверить более детально поднятый основной кластер:
 
 Брокеры,
 
-![alt text](image-3.png)
+![alt text](resources/image-3.png)
 
 Топики,
 
-![alt text](image-2.png)
+![alt text](resources/image-2.png)
 
 Консьюмеры,
 
-![alt text](image-1.png)
+![alt text](resources/image-1.png)
 
 Схемы,
 
-![alt text](image-4.png)
+![alt text](resources/image-4.png)
 
 ACL,
 
-![alt text](image-5.png)
+![alt text](resources/image-5.png)
 
 Так же, проверить дублирующий кластер:
 
 Брокеры,
 
-![alt text](image-6.png)
+![alt text](resources/image-6.png)
 
 Топики (пока нет копий из основного кластера),
 
-![alt text](image-7.png)
+![alt text](resources/image-7.png)
 
 Консьюмеры (так же пока ничего нет),
 
-![alt text](image-8.png)
+![alt text](resources/image-8.png)
 
 Схемы,
 
-![alt text](image-9.png)
+![alt text](resources/image-9.png)
 
 ACL,
 
-![alt text](image-10.png)
+![alt text](resources/image-10.png)
 
 ### 3. Смоделировать отправку данных о товарах
 
@@ -132,13 +131,13 @@ ACL,
 http://localhost:8085/docs
 ```
 
-![alt text](image-11.png)
+![alt text](resources/image-11.png)
 
 и выполнить запрос set_products
 
 В результате на основном кластере в топике products появиться 5 продуктов:
 
-![alt text](image-12.png)
+![alt text](resources/image-12.png)
 
 Так же данный топик будет создан на дублирующем кластере (данные будут загружены и туда при помощи сервиса mirror-maker).
 
@@ -150,19 +149,19 @@ http://localhost:8085/docs
 http://localhost:8086/docs
 ```
 
-![alt text](image-13.png)
+![alt text](resources/image-13.png)
 
 и выполнить запрос get_product_info, указав например, клавиатура
 
-![alt text](image-14.png)
+![alt text](resources/image-14.png)
 
 В результате данный запрос попадет в топик search-products на основном:
 
-![alt text](image-15.png)
+![alt text](resources/image-15.png)
 
 и дублирующем кластере:
 
-![alt text](image-16.png)
+![alt text](resources/image-16.png)
 
 Так же, данный запрос попадет еще и в сервис elasticsearch.
 Перейти в сервис kibana
@@ -173,37 +172,37 @@ http://localhost:5601/app/management/kibana/
 
 Создать index pattern
 
-![alt text](image-17.png)
+![alt text](resources/image-17.png)
 
-![alt text](image-18.png)
+![alt text](resources/image-18.png)
 
 Далее перейти в Discover, где можно увидеть поисковой запрос:
 
-![alt text](image-19.png)
+![alt text](resources/image-19.png)
 
 ### 5. Смоделировать отправку данных в HDFS
 
 Перейти в сервис hadoopapi
 
-![alt text](image-20.png)
+![alt text](resources/image-20.png)
 
 и выполнить запросы get_data (данные попадут в HDFS)
 
-![alt text](image-23.png)
+![alt text](resources/image-23.png)
 
 и get_recommendations,
 
-![alt text](image-21.png)
+![alt text](resources/image-21.png)
 
 рекомендации попадут в топик recommendations на дублирующем кластере:
 
-![alt text](image-24.png)
+![alt text](resources/image-24.png)
 
 ### 6. Смоделировать потоковую обработку данных
 
 Перейти в сервис streamprocessing (провалиться в логи контейнера)
 
-![alt text](image-25.png)
+![alt text](resources/image-25.png)
 
 Видим что прогрузилось 5 товаров.
 Далее смоделировать блокировку товаров.
@@ -218,14 +217,14 @@ http://localhost:8085/docs
 
 В результате данные попадут в топик ban-products на основном кластере:
 
-![alt text](image-26.png)
+![alt text](resources/image-26.png)
 
 Выполнить повторную загрузку товаров (в этом же сервисе, set_products)
 
 В результате, в сервисе streamprocessing можно увидеть, во первых обработку заблокированных товаров, 
 во вторых что был обработан только товар с идентфикатором 5 (который не был заблокирован)
 
-![alt text](image-27.png)
+![alt text](resources/image-27.png)
 
 ### 7. Смоделировать запись в файл
 
@@ -237,7 +236,7 @@ docker exec 17fa932644ef750ec49246504e65d1ddae28eebb2c1ce3f61387f3aa5174e564 cat
 
 можно увидеть следующее:
 
-![alt text](image-28.png)
+![alt text](resources/image-28.png)
 
 Это говорит о том что сервис kafka-connect пишет данные из топика products в файл.
 
@@ -251,7 +250,7 @@ http://localhost:9060/targets
 
 Видим что сервис собирает метрики с двух кластеров:
 
-![alt text](image-29.png)
+![alt text](resources/image-29.png)
 
 Перейти в сервис grafana:
 
@@ -261,13 +260,13 @@ http://localhost:3000/dashboards
 
 Выбрать дашборд Kafka Broker Metrics:
 
-![alt text](image-30.png)
+![alt text](resources/image-30.png)
 
 Так же был поднять сервис alertmanager (настроено оповещение)
 Для корректной работы сервиса необходимо указать почту отправителя и пароль, а так же почту получателя.
 
-![alt text](image-31.png)
+![alt text](resources/image-31.png)
 
 Смоделировать падение брокера, остановить например kafka-0:
 
-![alt text](image-32.png)
+![alt text](resources/image-32.png)
